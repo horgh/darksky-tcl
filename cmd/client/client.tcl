@@ -16,6 +16,10 @@ proc ::main {} {
 	set res [::darksky::forecast $darksky $latitude $longitude]
 	puts "$latitude,$longitude: $res"
 
+	foreach day [dict get $res forecast] {
+		puts "time: [clock format [dict get $day time]]"
+	}
+
 	return 1
 }
 

@@ -26,7 +26,10 @@ proc ::darksky::forecast {darksky latitude longitude} {
 	::http::config -useragent $::darksky::useragent
 	::http::register https 443 [list ::tls::socket -ssl2 0 -ssl3 0 -tls1 1]
 
-	set query [::http::formatQuery units ca]
+	set query [::http::formatQuery \
+		units ca \
+		exclude minutely,hourly,alerts,flags \
+	]
 	set url $::darksky::url/forecast/[dict get $darksky key]/$latitude,$longitude?$query
 	set token [::http::geturl $url -timeout $::darksky::timeout -binary 1]
 
@@ -73,7 +76,21 @@ proc ::darksky::parse_forecast {response} {
 		pressure    [dict get $response currently pressure] \
 		windSpeed   [dict get $response currently windSpeed] \
 		cloudCover  [dict get $response currently cloudCover] \
+		forecast    [list] \
 	]
+
+	foreach day [dict get $response daily data] {
+		dict lappend resp forecast [dict create \
+			time           [dict get $day time] \
+			temperatureMin [dict get $day temperatureMin] \
+			temperatureMax [dict get $day temperatureMax] \
+			summary        [dict get $day summary] \
+			humidity       [dict get $day humidity] \
+			pressure       [dict get $day pressure] \
+			windSpeed      [dict get $day windSpeed] \
+			cloudCover     [dict get $day cloudCover] \
+		]
+	}
 
 	return $resp
 }
