@@ -70,6 +70,8 @@ proc ::darksky::parse_forecast {response} {
 	set resp [dict create \
 		latitude    [dict get $response latitude] \
 		longitude   [dict get $response longitude] \
+		timezone    [dict get $response timezone] \
+		time        [dict get $response currently time] \
 		summary     [dict get $response currently summary] \
 		temperature [dict get $response currently temperature] \
 		humidity    [dict get $response currently humidity] \
